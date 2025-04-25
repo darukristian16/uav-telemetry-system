@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { HelpCircle, Mail, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button"; // Assuming Button component is consistent
+import { Input } from "@/components/ui/input";   // Assuming Input component is consistent
+import { HelpCircle, Mail, ArrowRight, CheckCircle } from "lucide-react"; // Added CheckCircle
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -18,90 +18,122 @@ export default function ForgotPassword() {
     setError("");
 
     try {
-      // In a real application, you would call an API endpoint to handle password reset
-      // For now, we'll just simulate a successful submission
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      // Simulate API call
+      console.log("Sending password reset link to:", email);
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate network delay
+
+      // Check for a dummy error condition if needed for testing
+      // if (email.includes("error")) {
+      //   throw new Error("Simulated server error");
+      // }
+
       setIsSubmitted(true);
       setIsLoading(false);
-    } catch (error) {
-      setError("An error occurred. Please try again.");
+    } catch (err) {
+      console.error("Forgot password error:", err);
+      setError("An error occurred while sending the reset link. Please try again.");
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0f172a]">
-      <div className="w-full max-w-md rounded-lg bg-[#1e293b] p-8">
+    // Main container: Dark background, centered content (same as SignIn)
+    <main className="flex min-h-screen items-center justify-center bg-gray-900 p-4 text-gray-200">
+      {/* Card (same as SignIn) */}
+      <div className="w-full max-w-md rounded-lg bg-gray-800 p-8 shadow-xl">
+        {/* Top Icon (same as SignIn) */}
         <div className="mb-6 flex justify-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-transparent border-2 border-[#3b82f6]">
-            <HelpCircle className="h-6 w-6 text-[#3b82f6]" />
-          </div>
+          <HelpCircle className="h-12 w-12 text-blue-500" />
         </div>
 
-        <h1 className="mb-1 text-center text-3xl font-bold text-white">Reset Password</h1>
-        <p className="mb-8 text-center text-gray-400">
-          Enter your email address and we'll send you a link to reset your password.
-        </p>
+        {/* Headings */}
+        <h1 className="mb-2 text-center text-2xl font-bold text-white">
+          Reset Password
+        </h1>
+        {!isSubmitted && (
+           <p className="mb-8 text-center text-sm text-gray-400">
+             Enter your email address and we'll send you a link to reset your password.
+           </p>
+        )}
 
-        {error && (
-          <div className="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded relative mb-4" role="alert">
+        {/* Error Message */}
+        {error && !isSubmitted && ( // Only show error if not submitted
+          <div className="mb-4 rounded border border-red-500 bg-red-900/50 px-4 py-3 text-sm text-red-200" role="alert">
             <span className="block sm:inline">{error}</span>
           </div>
         )}
 
+        {/* Success Message */}
         {isSubmitted ? (
-          <div className="bg-blue-900/50 border border-blue-500 text-blue-200 px-4 py-3 rounded relative mb-4" role="alert">
-            <p className="font-bold">Email sent!</p>
-            <p className="block sm:inline">Check your inbox for a password reset link.</p>
-            <div className="mt-4 text-center">
-              <Link href="/auth/signin" className="text-[#3b82f6] hover:text-[#2563eb]">
-                Return to sign in
-              </Link>
-            </div>
-          </div>
+          <div className="text-center">
+             <div className="mb-4 flex justify-center">
+               <CheckCircle className="h-12 w-12 text-green-500" /> {/* Success Icon */}
+             </div>
+             <h2 className="mb-2 text-xl font-semibold text-white">Check your email</h2>
+             <p className="mb-6 text-sm text-gray-400">
+               We've sent a password reset link to <span className="font-medium text-white">{email}</span>. Please check your inbox (and spam folder).
+             </p>
+             <Link
+               href="/auth/signin" // Adjust link as needed
+               className="font-medium text-blue-500 hover:text-blue-400 hover:underline"
+             >
+               Return to Sign In
+             </Link>
+           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-gray-300">
+          // Form
+          <form onSubmit={handleSubmit}>
+            {/* Email Input */}
+            <div className="mb-6"> {/* Increased margin */}
+              <label
+                htmlFor="email"
+                className="mb-1 block text-sm font-medium text-gray-300"
+              >
                 Email Address
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <Mail className="h-5 w-5 text-gray-400" />
-                </div>
+                </span>
+                {/* Input styled exactly like SignIn */}
                 <Input
                   id="email"
                   type="email"
                   placeholder="Enter your email"
-                  className="pl-10 bg-[#2d3748] border-0 text-white"
+                  className="w-full rounded-md border border-gray-600 bg-gray-700 pl-10 pr-3 py-2 text-white placeholder-gray-500 transition duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  aria-label="Email Address"
+                  disabled={isLoading}
                 />
               </div>
             </div>
 
-            <Button 
-              type="submit" 
-              className="w-full bg-[#3b82f6] hover:bg-[#2563eb] text-white"
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              // Button styled exactly like SignIn
+              className="flex w-full items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 font-bold text-white transition duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50"
               disabled={isLoading}
             >
-              <ArrowRight className="mr-2 h-4 w-4" /> 
+              <ArrowRight className="h-5 w-5" />
               {isLoading ? "Sending..." : "Send Reset Link"}
             </Button>
 
-            <div className="text-center mt-4">
-              <p className="text-sm text-gray-400">
-                Remember your password?{" "}
-                <Link href="/auth/signin" className="text-[#3b82f6] hover:text-[#2563eb]">
-                  Back to sign in
-                </Link>
-              </p>
-            </div>
+             {/* Bottom Link */}
+             <p className="mt-6 text-center text-sm text-gray-400"> {/* Added margin-top */}
+                 Remember your password?{' '}
+                 <Link
+                   href="/auth/signin" // Adjust if your sign-in path is different
+                   className="font-medium text-blue-500 hover:text-blue-400 hover:underline"
+                 >
+                   Sign in
+                 </Link>
+               </p>
           </form>
         )}
       </div>
-    </div>
+    </main>
   );
 }

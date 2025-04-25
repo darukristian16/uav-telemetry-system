@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button"; // Assuming consistent Button component
+import { Checkbox } from "@/components/ui/checkbox"; // Assuming consistent Checkbox component
+import { Input } from "@/components/ui/input";   // Assuming consistent Input component
 import { HelpCircle, User, Mail, Lock, UserPlus } from "lucide-react";
 
 export default function SignUp() {
@@ -28,9 +28,14 @@ export default function SignUp() {
       setIsLoading(false);
       return;
     }
+    if (password.length < 8) { // Example: Add password length validation
+        setError("Password must be at least 8 characters long");
+        setIsLoading(false);
+        return;
+    }
 
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetch("/api/auth/register", { // Ensure this endpoint exists
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -46,155 +51,215 @@ export default function SignUp() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to register");
+        // Use the message from the API if available, otherwise a default
+        throw new Error(data.message || "Registration failed. Please try again.");
       }
 
+      // Redirect to sign-in page with a query parameter indicating success
       router.push("/auth/signin?registered=true");
+
     } catch (error) {
-      setError(error instanceof Error ? error.message : "An error occurred during registration");
+      setError(error instanceof Error ? error.message : "An unexpected error occurred.");
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0f172a]">
-      <div className="w-full max-w-md rounded-lg bg-[#1e293b] p-8">
+    // Main container: Dark background, centered content (same as others)
+    <main className="flex min-h-screen items-center justify-center bg-gray-900 p-4 text-gray-200">
+      {/* Card (same as others) */}
+      <div className="w-full max-w-md rounded-lg bg-gray-800 p-8 shadow-xl">
+        {/* Top Icon (same as others) */}
         <div className="mb-6 flex justify-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-transparent border-2 border-[#3b82f6]">
-            <HelpCircle className="h-6 w-6 text-[#3b82f6]" />
-          </div>
+          <HelpCircle className="h-12 w-12 text-blue-500" />
         </div>
 
-        <h1 className="mb-1 text-center text-3xl font-bold text-white">Create your account</h1>
-        <p className="mb-8 text-center text-gray-400">Join to use UAV Telemetry System</p>
+        {/* Headings (same as others) */}
+        <h1 className="mb-2 text-center text-2xl font-bold text-white">
+          Create your account
+        </h1>
+        <p className="mb-8 text-center text-sm text-gray-400">
+          Join to use the UAV Telemetry System
+        </p>
 
+        {/* Error Message (same as others) */}
         {error && (
-          <div className="bg-red-900/50 border border-red-500 text-red-200 px-4 py-3 rounded relative mb-4" role="alert">
+          <div className="mb-4 rounded border border-red-500 bg-red-900/50 px-4 py-3 text-sm text-red-200" role="alert">
             <span className="block sm:inline">{error}</span>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="username" className="text-sm font-medium text-gray-300">
+        {/* Form */}
+        <form onSubmit={handleSubmit}>
+          {/* Username Input */}
+          <div className="mb-4"> {/* Consistent spacing */}
+            <label
+              htmlFor="username"
+              className="mb-1 block text-sm font-medium text-gray-300"
+            >
               Username
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <User className="h-5 w-5 text-gray-400" />
-              </div>
+              </span>
+              {/* Input styled like others */}
               <Input
                 id="username"
                 name="username"
                 type="text"
+                placeholder="Choose a username"
+                className="w-full rounded-md border border-gray-600 bg-gray-700 pl-10 pr-3 py-2 text-white placeholder-gray-500 transition duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="pl-10 bg-[#2d3748] border-0 text-white"
                 required
+                aria-label="Username"
+                disabled={isLoading}
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-gray-300">
-              Email address
+          {/* Email Input */}
+          <div className="mb-4">
+            <label
+              htmlFor="email"
+              className="mb-1 block text-sm font-medium text-gray-300"
+            >
+              Email Address
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <Mail className="h-5 w-5 text-gray-400" />
-              </div>
+              </span>
+              {/* Input styled like others */}
               <Input
                 id="email"
                 name="email"
                 type="email"
+                placeholder="Enter your email"
+                className="w-full rounded-md border border-gray-600 bg-gray-700 pl-10 pr-3 py-2 text-white placeholder-gray-500 transition duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="pl-10 bg-[#2d3748] border-0 text-white"
                 required
+                aria-label="Email Address"
+                disabled={isLoading}
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-gray-300">
+          {/* Password Input */}
+          <div className="mb-4">
+            <label
+              htmlFor="password"
+              className="mb-1 block text-sm font-medium text-gray-300"
+            >
               Password
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <Lock className="h-5 w-5 text-gray-400" />
-              </div>
+              </span>
+              {/* Input styled like others */}
               <Input
                 id="password"
                 name="password"
                 type="password"
+                placeholder="Create a password (min. 8 characters)"
+                className="w-full rounded-md border border-gray-600 bg-gray-700 pl-10 pr-3 py-2 text-white placeholder-gray-500 transition duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 bg-[#2d3748] border-0 text-white"
                 required
+                minLength={8} // Add minLength for basic validation
+                aria-label="Password"
+                disabled={isLoading}
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="confirmPassword" className="text-sm font-medium text-gray-300">
+          {/* Confirm Password Input */}
+          <div className="mb-6"> {/* Slightly more margin before checkbox/button */}
+            <label
+              htmlFor="confirmPassword"
+              className="mb-1 block text-sm font-medium text-gray-300"
+            >
               Confirm Password
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                 <Lock className="h-5 w-5 text-gray-400" />
-              </div>
+              </span>
+              {/* Input styled like others */}
               <Input
                 id="confirmPassword"
                 name="confirmPassword"
                 type="password"
+                placeholder="Confirm your password"
+                className="w-full rounded-md border border-gray-600 bg-gray-700 pl-10 pr-3 py-2 text-white placeholder-gray-500 transition duration-200 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="pl-10 bg-[#2d3748] border-0 text-white"
                 required
+                minLength={8}
+                aria-label="Confirm Password"
+                disabled={isLoading}
               />
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
+          {/* Save Telemetry Checkbox */}
+          <div className="mb-6 flex items-center"> {/* Spacing before button */}
+            {/* Checkbox styled like Sign In */}
             <Checkbox
               id="saveTelemetry"
               checked={saveTelemetry}
               onCheckedChange={(checked) => setSaveTelemetry(checked === true)}
-              className="border-gray-500 data-[state=checked]:bg-[#3b82f6] data-[state=checked]:border-[#3b82f6]"
+              className="h-4 w-4 cursor-pointer rounded border-gray-500 bg-gray-700 text-blue-500 focus:ring-blue-500 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+              aria-label="Save telemetry configurations to cloud"
+              disabled={isLoading}
             />
-            <label htmlFor="saveTelemetry" className="text-sm font-medium text-gray-300">
-              Save telemetry configurations to cloud
+            <label
+              htmlFor="saveTelemetry"
+              className="ml-2 cursor-pointer text-sm text-gray-300"
+            >
+              Save telemetry configurations to cloud (optional)
             </label>
           </div>
 
-          <Button 
-            type="submit" 
-            className="w-full bg-[#3b82f6] hover:bg-[#2563eb] text-white"
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            // Button styled exactly like others
+            className="flex w-full items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-2 font-bold text-white transition duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50"
             disabled={isLoading}
           >
-            <UserPlus className="mr-2 h-5 w-5" />
-            {isLoading ? "Creating account..." : "Create Account"}
+            <UserPlus className="h-5 w-5" /> {/* Corrected Icon */}
+            {isLoading ? "Creating Account..." : "Create Account"}
           </Button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-gray-400">
-          Already have an account?{" "}
-          <Link href="/auth/signin" className="text-[#3b82f6] hover:underline">
+        {/* "Already have an account?" Link */}
+        <p className="mt-6 text-center text-sm text-gray-400">
+          Already have an account?{' '}
+          <Link
+            href="/auth/signin" // Adjust if path differs
+            className="font-medium text-blue-500 hover:text-blue-400 hover:underline"
+          >
             Sign in
           </Link>
-        </div>
+        </p>
 
-        <div className="mt-8 text-center text-xs text-gray-400">
-          By registering you agree to our{" "}
-          <Link href="/terms" className="text-[#3b82f6] hover:underline">
+        {/* Terms and Privacy Links */}
+        <p className="mt-8 text-center text-xs text-gray-400"> {/* Smaller text */}
+          By creating an account, you agree to our<br /> {/* Line break for smaller screens */}
+          <Link href="/terms" className="font-medium text-blue-500 hover:text-blue-400 hover:underline">
             Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link href="/privacy" className="text-[#3b82f6] hover:underline">
+          </Link>{' '}
+          &{' '}
+          <Link href="/privacy" className="font-medium text-blue-500 hover:text-blue-400 hover:underline">
             Privacy Policy
           </Link>
-        </div>
+          .
+        </p>
       </div>
-    </div>
+    </main>
   );
 }
